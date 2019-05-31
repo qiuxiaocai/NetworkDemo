@@ -50,10 +50,17 @@ public enum RequestType {
 
 /// 上传数据格式
 public struct FormData {
-    var data: Data = Data()
-    var name: String = ""
-    var fileName: String = ""
-    var mineType: String = ""
+    var data: Data
+    var name: String
+    var fileName: String
+    var mineType: String
+    
+    public init(name: String, data: Data = Data(), fileName: String = "", mineType: String = "") {
+        self.name = name
+        self.data = data
+        self.fileName = fileName
+        self.mineType = mineType
+    }
 }
 
 /// api config
@@ -65,10 +72,40 @@ public protocol ApiConfig {
     var requestType: RequestType { get }
     var formData: [FormData] { get }
     var responseType: ResponseType { get }
-    var downloadPath: URL { get }
+    var downloadPath: URL? { get }
 }
 
 extension ApiConfig {
+    /// 提供一些默认实现
+    public var headers: [String: String] {
+        return [:]
+    }
+    
+    public var params: [String: Any] {
+        return [:]
+    }
+ 
+    public var formData: [FormData] {
+        return []
+    }
+    
+    public var downloadPath: URL? {
+        return nil
+    }
+}
+
+extension ApiConfig {
+    
+    /// 提供默认的地址
+    public func downloadDestination() -> DownloadRequest.DownloadFileDestination {
+        if let destination = downloadPath {
+            return {_, _ in
+                return (destination, [.removePreviousFile, .createIntermediateDirectories])
+            }
+        }
+        return DownloadRequest.suggestedDownloadDestination()
+    }
+    
     /// 通过实现的扩展生成一个urlRequest
     public func urlRequest(hostUrl: String) -> URLRequest? {
         guard let requestURL = URL(string: hostUrl + "/" + apiPath) else {
@@ -91,7 +128,7 @@ public struct ApiTarget: ApiConfig {
     public var requestType: RequestType
     public var formData: [FormData]
     public var responseType: ResponseType
-    public var downloadPath: URL
+    public var downloadPath: URL?
     
     public init(api: ApiConfig) {
         apiPath = api.apiPath
@@ -151,8 +188,7 @@ open class Api<T> where T: ResponseFormatter  {
         engine.loadRequest(api: api, progressHandler: progressHandler, completionHandler: { response in
             if let res = response as? DataResponse<Any> {
                 handle(response: res)
-            }
-            else if let res = response as? DownloadResponse<Any> {
+            } else if let res = response as? DownloadResponse<Any> {
                 handleDownload(response: res)
             }
         }) { task in

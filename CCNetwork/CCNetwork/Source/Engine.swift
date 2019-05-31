@@ -11,7 +11,7 @@ import Alamofire
 
 /// 负责相应 host下 api 的请求以及对请求任务的管理
 
-public class Engine {
+open class Engine {
     
     /// 是否启用https认证,默认yes
     public let enableCerSSLPinning: Bool
@@ -69,43 +69,6 @@ public class Engine {
             return
         }
         
-        func start(request: Request) {
-            
-            func parseResponse<T: DataResponseSerializerProtocol>(request: DataRequest, responseSerializer: T) {
-                request.response(responseSerializer: responseSerializer, completionHandler: completionHandler)
-            }
-            
-            func parseDownloadReponse<T: DownloadResponseSerializerProtocol>(request: DownloadRequest, responseSerializer: T) {
-                request.response(responseSerializer: responseSerializer, completionHandler: completionHandler)
-            }
-            
-            if let dataRequest = request as? DataRequest {
-                switch apiTarget.responseType {
-                case .data:
-                    parseResponse(request: dataRequest, responseSerializer: DataRequest.dataResponseSerializer())
-                case .json(readingOptions: let readingOptions):
-                    parseResponse(request: dataRequest, responseSerializer: DataRequest.jsonResponseSerializer(options: readingOptions))
-                case .string:
-                    parseResponse(request: dataRequest, responseSerializer: DataRequest.stringResponseSerializer())
-                case .plist:
-                    parseResponse(request: dataRequest, responseSerializer: DataRequest.propertyListResponseSerializer())
-                }
-            } else if let downloadRequest = request as? DownloadRequest {
-                switch apiTarget.responseType {
-                case .data:
-                    parseDownloadReponse(request: downloadRequest, responseSerializer: DownloadRequest.dataResponseSerializer())
-                case .json(readingOptions: let readingOptions):
-                    parseDownloadReponse(request: downloadRequest, responseSerializer: DownloadRequest.jsonResponseSerializer(options: readingOptions))
-                case .string:
-                    parseDownloadReponse(request: downloadRequest, responseSerializer: DownloadRequest.stringResponseSerializer())
-                case .plist:
-                    parseDownloadReponse(request: downloadRequest, responseSerializer: DownloadRequest.propertyListResponseSerializer())
-                }
-            }
-
-            request.resume()
-        }
-        
         func progress(request: Request) {
             if let progressHandler = progressHandler {
                 switch request {
@@ -119,35 +82,66 @@ public class Engine {
                     assert(false, "unsupported request type")
                 }
             }
-            
-            switch apiTarget.requestType {
-            case .getData, .postData:
-                let afRequest = afSessionManager.request(urlRequest)
-                progress(request: afRequest)
-                start(request: afRequest)
-            case .uploadFormData:
-                afSessionManager.upload(multipartFormData: { (multipartFormData) in
-                    for data in apiTarget.formData {
-                        multipartFormData.append(data.data, withName: data.name, fileName: data.fileName, mimeType: data.mineType)
-                    }
-                }, with: urlRequest) { (result) in
-                    switch result {
-                    case .success(let request, _, _):
-                        start(request: request)
-                        progress(request: request)
-                        onTask(request.task)
-                    case .failure(_):
-                        break
-                    }
-                }
-            case .downloadData:
-                let afRequest = afSessionManager.download(urlRequest) { _, _ -> (destinationURL: URL, options: DownloadRequest.DownloadOptions) in
-                    return (apiTarget.downloadPath, [.createIntermediateDirectories, .removePreviousFile])
-                }
-                progress(request: afRequest)
-                start(request: afRequest)
-//                Request.serializeResponseData(response: HTTPURLResponse?, data: Data?, error: Error?)
+        }
+        
+        func response(dataRequest: DataRequest) {
+            func parseResponse<T: DataResponseSerializerProtocol>(request: DataRequest, responseSerializer: T) {
+                request.response(responseSerializer: responseSerializer, completionHandler: completionHandler)
             }
+            switch apiTarget.responseType {
+            case .data:
+                parseResponse(request: dataRequest, responseSerializer: DataRequest.dataResponseSerializer())
+            case .json(readingOptions: let readingOptions):
+                parseResponse(request: dataRequest, responseSerializer: DataRequest.jsonResponseSerializer(options: readingOptions))
+            case .string:
+                parseResponse(request: dataRequest, responseSerializer: DataRequest.stringResponseSerializer())
+            case .plist:
+                parseResponse(request: dataRequest, responseSerializer: DataRequest.propertyListResponseSerializer())
+            }
+            progress(request: dataRequest)
+            dataRequest.resume()
+        }
+        
+        func response(downloadRequest: DownloadRequest) {
+            func parseDownloadReponse<T: DownloadResponseSerializerProtocol>(request: DownloadRequest, responseSerializer: T) {
+                request.response(responseSerializer: responseSerializer, completionHandler: completionHandler)
+            }
+            switch apiTarget.responseType {
+            case .data:
+                parseDownloadReponse(request: downloadRequest, responseSerializer: DownloadRequest.dataResponseSerializer())
+            case .json(readingOptions: let readingOptions):
+                parseDownloadReponse(request: downloadRequest, responseSerializer: DownloadRequest.jsonResponseSerializer(options: readingOptions))
+            case .string:
+                parseDownloadReponse(request: downloadRequest, responseSerializer: DownloadRequest.stringResponseSerializer())
+            case .plist:
+                parseDownloadReponse(request: downloadRequest, responseSerializer: DownloadRequest.propertyListResponseSerializer())
+            }
+            progress(request: downloadRequest)
+            downloadRequest.resume()
+        }
+        
+        switch apiTarget.requestType {
+        case .getData, .postData:
+            let dataRequest = afSessionManager.request(urlRequest)
+            response(dataRequest: dataRequest)
+            onTask(dataRequest.task)
+        case .uploadFormData:
+            afSessionManager.upload(multipartFormData: { (multipartFormData) in
+                for data in apiTarget.formData {
+                    multipartFormData.append(data.data, withName: data.name, fileName: data.fileName, mimeType: data.mineType)
+                }
+            }, with: urlRequest) { (result) in
+                switch result {
+                case .success(let request, _, _):
+                    response(dataRequest: request)
+                    onTask(request.task)
+                case .failure(_):
+                    break
+                }
+            }
+        case .downloadData:
+            let downloadRequest = afSessionManager.download(urlRequest, to: apiTarget.downloadDestination())
+            response(downloadRequest: downloadRequest)
         }
     }
     

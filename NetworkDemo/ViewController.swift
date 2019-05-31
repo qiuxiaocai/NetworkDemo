@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Alamofire
+import NetWorkApi
 
 class ViewController: UIViewController {
 
@@ -17,6 +17,29 @@ class ViewController: UIViewController {
         
     }
 
-
+    @IBAction func requestButtonClicked(_ sender: Any) {
+        let api = VersionUpdateApi.init()
+        api.progressHandler = { progress in
+            print(progress.hashValue)
+        }
+        api.completionHandler = { result in
+            switch result {
+            case .success(let response):
+                if response.status == ResponseStatus.success {
+                    print(response.versionInfo.debugDescription)
+                    print(response.versionInfomation.debugDescription)
+                }
+            case .failure(let error):
+                print("request failure error = \(error)")
+            }
+        }
+        api.start(in: .javaEngine)
+    }
+    
+    @IBAction func uploadButtonClicked(_ sender: Any) {
+        
+    }
+    
+    
 }
 

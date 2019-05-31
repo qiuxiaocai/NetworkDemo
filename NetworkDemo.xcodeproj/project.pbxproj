@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D8478A62229FD9180017391C /* BaseApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8478A61229FD9180017391C /* BaseApi.swift */; };
+		D8B731D222A1221B00E58FD9 /* NetWorkApi.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8B731D122A1221B00E58FD9 /* NetWorkApi.framework */; };
 		D8DFF421229B9409001B4C24 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8DFF420229B9409001B4C24 /* AppDelegate.swift */; };
 		D8DFF423229B9409001B4C24 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8DFF422229B9409001B4C24 /* ViewController.swift */; };
 		D8DFF426229B9409001B4C24 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D8DFF424229B9409001B4C24 /* Main.storyboard */; };
@@ -37,7 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D8478A61229FD9180017391C /* BaseApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseApi.swift; sourceTree = "<group>"; };
+		D8B731D122A1221B00E58FD9 /* NetWorkApi.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = NetWorkApi.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8DFF41D229B9409001B4C24 /* NetworkDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NetworkDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8DFF420229B9409001B4C24 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D8DFF422229B9409001B4C24 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -60,6 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8B731D222A1221B00E58FD9 /* NetWorkApi.framework in Frameworks */,
 				D8DFF47E229BAFD1001B4C24 /* Alamofire.framework in Frameworks */,
 				D8DFF47D229BAF38001B4C24 /* CCNetwork.framework in Frameworks */,
 			);
@@ -82,14 +83,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		D8478A63229FD92A0017391C /* NetWork */ = {
-			isa = PBXGroup;
-			children = (
-				D8478A61229FD9180017391C /* BaseApi.swift */,
-			);
-			path = NetWork;
-			sourceTree = "<group>";
-		};
 		D8DFF414229B9409001B4C24 = {
 			isa = PBXGroup;
 			children = (
@@ -114,7 +107,6 @@
 		D8DFF41F229B9409001B4C24 /* NetworkDemo */ = {
 			isa = PBXGroup;
 			children = (
-				D8478A63229FD92A0017391C /* NetWork */,
 				D8DFF420229B9409001B4C24 /* AppDelegate.swift */,
 				D8DFF422229B9409001B4C24 /* ViewController.swift */,
 				D8DFF424229B9409001B4C24 /* Main.storyboard */,
@@ -146,6 +138,7 @@
 		D8DFF472229BACC7001B4C24 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D8B731D122A1221B00E58FD9 /* NetWorkApi.framework */,
 				D8DFF47C229BAF38001B4C24 /* CCNetwork.framework */,
 				D8DFF473229BACC7001B4C24 /* Alamofire.framework */,
 			);
@@ -308,7 +301,6 @@
 			files = (
 				D8DFF423229B9409001B4C24 /* ViewController.swift in Sources */,
 				D8DFF421229B9409001B4C24 /* AppDelegate.swift in Sources */,
-				D8478A62229FD9180017391C /* BaseApi.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

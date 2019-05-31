@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import NetWorkApi
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
