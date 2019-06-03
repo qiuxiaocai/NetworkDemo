@@ -49,18 +49,11 @@ public enum RequestType {
 }
 
 /// 上传数据格式
-public struct FormData {
-    var data: Data
-    var name: String
-    var fileName: String
-    var mineType: String
-    
-    public init(name: String, data: Data = Data(), fileName: String = "", mineType: String = "") {
-        self.name = name
-        self.data = data
-        self.fileName = fileName
-        self.mineType = mineType
-    }
+public enum FormData {
+    /// 文件
+    case file(data: Data, name: String, fileName: String, mineType: String?)
+    /// 参数
+    case param(data: Data, name: String)
 }
 
 /// api config
@@ -108,9 +101,10 @@ extension ApiConfig {
     
     /// 通过实现的扩展生成一个urlRequest
     public func urlRequest(hostUrl: String) -> URLRequest? {
-        guard let requestURL = URL(string: hostUrl + "/" + apiPath) else {
+        guard let url = URL(string: hostUrl) else {
             return nil
         }
+        let requestURL = url.appendingPathComponent(apiPath)
         var urlRequest = URLRequest.init(url: requestURL)
         urlRequest.httpMethod = requestType.httpMethod.rawValue
         urlRequest.allHTTPHeaderFields = headers

@@ -20,7 +20,7 @@ class ViewController: UIViewController {
     @IBAction func requestButtonClicked(_ sender: Any) {
         let api = VersionUpdateApi.init()
         api.progressHandler = { progress in
-            print(progress.hashValue)
+            print(progress.localizedDescription ?? "")
         }
         api.completionHandler = { result in
             switch result {
@@ -37,7 +37,23 @@ class ViewController: UIViewController {
     }
     
     @IBAction func uploadButtonClicked(_ sender: Any) {
-        
+        let api = UploadImageApi.init(image: #imageLiteral(resourceName: "emission_carmodel_tips"), app: "mobile", key: "239fjkf342fwv342")
+        api.progressHandler = { progress in
+            print(progress.localizedDescription ?? "")
+        }
+        api.completionHandler = { result in
+            switch result {
+            case .success(let response):
+                if response.status == ResponseStatus.success {
+                    print("imageUrl == \(response.imageUrl ?? "")")
+                } else {
+                    print(response.message ?? "未知错误")
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+        api.start(in: .imageEngine)
     }
     
     

@@ -128,9 +128,14 @@ open class Engine {
         case .uploadFormData:
             afSessionManager.upload(multipartFormData: { (multipartFormData) in
                 for data in apiTarget.formData {
-                    multipartFormData.append(data.data, withName: data.name, fileName: data.fileName, mimeType: data.mineType)
+                    switch data {
+                    case let .file(data, name, fileName, mineType):
+                        multipartFormData.append(data, withName: name, fileName: fileName, mimeType: mineType ?? "")
+                    case let .param(data, name):
+                        multipartFormData.append(data, withName: name)
+                    }
                 }
-            }, with: urlRequest) { (result) in
+            }, with: urlRequest, queue: .main) { (result) in
                 switch result {
                 case .success(let request, _, _):
                     response(dataRequest: request)

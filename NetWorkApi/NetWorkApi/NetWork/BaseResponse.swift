@@ -9,13 +9,28 @@
 import Foundation
 import CCNetwork
 
+/// 适配器 根据不同的接口类型来处理返回原始数据
+public enum AdaptorType {
+    case java
+    case common
+}
+
+extension AdaptorType {
+    func adaptJava(with dict: [String: Any]) -> (Int?, String?, [String: Any]?) {
+        let code = dict["code"] as? Int
+        let message = dict["message"] as? String
+        let dataDict = dict["data"] as? [String: Any]
+        return (code, message, dataDict)
+    }
+}
+
 /// 根据返回code 定义通用返回状态
 public enum ResponseStatus {
     case success
     case unknown
     
-    static func statusWith(code: Int?) -> ResponseStatus {
-        guard let code = code else {
+    static func statusWith(javaCode: Int?) -> ResponseStatus {
+        guard let code = javaCode else {
             return .unknown
         }
         switch code {
@@ -34,6 +49,11 @@ public class BaseResponse: ResponseFormatter {
     
     required init() { }
     
+    /// 子类override，返回不同的code解析类型
+    var adaptorType: AdaptorType {
+        return .java
+    }
+    
     /// 子类override，接收对应的dict
     func receive(dict: [String : Any]?) { }
     
@@ -45,16 +65,27 @@ public class BaseResponse: ResponseFormatter {
     
     public static func preprocess(data: Any?) -> Self {
         let object = self.init()
-        if let dict = data as? [String: Any] {
-            let code = dict["code"] as? Int
-            let message = dict["message"] as? String
-            let data = dict["data"] as? [String: Any]
-            object.status = ResponseStatus.statusWith(code: code)
-            object.message = message
-            object.receive(dict: data)
+        switch object.adaptorType {
+        case .java:
+            if let dict = data as? [String: Any] {
+                debugLog(dict)
+                let value: (code: Int?, message: String?, dataDict: Dictionary?) = object.adaptorType.adaptJava(with: dict)
+                object.status = ResponseStatus.statusWith(javaCode: value.code)
+                object.message = value.message
+                object.receive(dict: value.dataDict)
+            } else {
+                print("解析code error")
+            }
+        case .common:
+            if let dict = data as? [String: Any] {
+                object.receive(dict: dict)
+            } else {
+                print("解析code error")
+            }
         }
         return object
     }
+    
     
 }
 
