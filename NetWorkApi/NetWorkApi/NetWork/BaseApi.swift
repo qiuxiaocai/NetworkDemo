@@ -36,7 +36,7 @@ extension ApiConfig {
     /// 默认下载地址
     public var downloadPath: URL? {
         let documentsURL: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        return documentsURL
+        return documentsURL.appendingPathComponent("Test")
     }
     
 }

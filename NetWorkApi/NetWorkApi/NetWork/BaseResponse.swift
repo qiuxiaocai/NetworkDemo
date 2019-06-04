@@ -63,6 +63,9 @@ public class BaseResponse: ResponseFormatter {
     /// 子类override，接收对应的string
     func receive(string: String?) { }
     
+    /// 子类override，接收对应的data
+    func receive(data: Data?) {}
+
     public static func preprocess(data: Any?) -> Self {
         let object = self.init()
         switch object.adaptorType {
@@ -79,8 +82,8 @@ public class BaseResponse: ResponseFormatter {
         case .common:
             if let dict = data as? [String: Any] {
                 object.receive(dict: dict)
-            } else {
-                print("解析code error")
+            } else if let data = data as? Data {
+                object.receive(data: data)
             }
         }
         return object

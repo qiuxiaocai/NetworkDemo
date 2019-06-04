@@ -65,7 +65,12 @@ public protocol ApiConfig {
     var requestType: RequestType { get }
     var formData: [FormData] { get }
     var responseType: ResponseType { get }
+    
+    /// 存储路径
     var downloadPath: URL? { get }
+    
+    /// 存储名称 默认是名称不变
+    var downloadStoredName: String? { get }
 }
 
 extension ApiConfig {
@@ -85,6 +90,10 @@ extension ApiConfig {
     public var downloadPath: URL? {
         return nil
     }
+    
+    public var downloadStoredName: String? {
+        return nil
+    }
 }
 
 extension ApiConfig {
@@ -92,11 +101,14 @@ extension ApiConfig {
     /// 提供默认的地址
     public func downloadDestination() -> DownloadRequest.DownloadFileDestination {
         if let destination = downloadPath {
-            return {_, _ in
-                return (destination, [.removePreviousFile, .createIntermediateDirectories])
+            return {_, response in
+                /// 按照原名存储
+                let fileURL = destination.appendingPathComponent(self.downloadStoredName ?? response.suggestedFilename!)
+                //两个参数表示如果有同名文件则会覆盖，如果路径中文件夹不存在则会自动创建
+                return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
             }
         }
-        return DownloadRequest.suggestedDownloadDestination()
+        return DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
     }
     
     /// 通过实现的扩展生成一个urlRequest
@@ -123,6 +135,7 @@ public struct ApiTarget: ApiConfig {
     public var formData: [FormData]
     public var responseType: ResponseType
     public var downloadPath: URL?
+    public var downloadStoredName: String?
     
     public init(api: ApiConfig) {
         apiPath = api.apiPath
@@ -133,6 +146,7 @@ public struct ApiTarget: ApiConfig {
         formData = api.formData
         responseType = api.responseType
         downloadPath = api.downloadPath
+        downloadStoredName = api.downloadStoredName
     }
 }
 
@@ -140,6 +154,7 @@ open class Api<T> where T: ResponseFormatter  {
     
     public var completionHandler: ((ApiResult<T>) -> Void)?
     public var progressHandler: ((Progress) -> Void)?
+    public var destinationUrlHandler: ((URL?) -> Void)?
     private var task: URLSessionTask?
     public var state: URLSessionTask.State? {
         return task?.state
@@ -177,13 +192,25 @@ open class Api<T> where T: ResponseFormatter  {
             case .failure(let error):
                 completionHandler?(ApiResult.failure(error))
             }
+            destinationUrlHandler?(response.destinationURL)
         }
         
         engine.loadRequest(api: api, progressHandler: progressHandler, completionHandler: { response in
-            if let res = response as? DataResponse<Any> {
-                handle(response: res)
-            } else if let res = response as? DownloadResponse<Any> {
-                handleDownload(response: res)
+            switch response {
+            case let dataResponseAny as DataResponse<Any>:
+                handle(response: dataResponseAny)
+            case let dataResponseData as DataResponse<Data>:
+                handle(response: dataResponseData)
+            case let dataResponseString as DataResponse<String>:
+                handle(response: dataResponseString)
+            case let downloadResponseAny as DownloadResponse<Any>:
+                handleDownload(response: downloadResponseAny)
+            case let downloadResponseData as DownloadResponse<Data>:
+                handleDownload(response: downloadResponseData)
+            case let downloadResponseString as DownloadResponse<String>:
+                handleDownload(response: downloadResponseString)
+            default:
+                return
             }
         }) { task in
             self.task = task

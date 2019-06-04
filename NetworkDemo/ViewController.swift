@@ -37,7 +37,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func uploadButtonClicked(_ sender: Any) {
-        let api = UploadImageApi.init(image: #imageLiteral(resourceName: "emission_carmodel_tips"), app: "mobile", key: "239fjkf342fwv342")
+        let api = UploadImageApi.init(image: #imageLiteral(resourceName: "IMG_9152"), app: "mobile", key: "239fjkf342fwv342")
         api.progressHandler = { progress in
             print(progress.localizedDescription ?? "")
         }
@@ -54,6 +54,32 @@ class ViewController: UIViewController {
             }
         }
         api.start(in: .imageEngine)
+    }
+    
+    @IBAction func DownloadButtonClicked(_ sender: Any) {
+        let api = DownloadLogoApi()
+//        api.completionHandler = { (result) in
+//            switch result {
+//            case .success(let response):
+//                if response.status == .success {
+//                    print("parse success")
+//                    let image = UIImage.init(data: response.value ?? Data())
+//                    print(String(describing: image))
+//                } else {
+//                    print("parse error")
+//                }
+//            case .failure(let error):
+//                print(error.localizedDescription)
+//            }
+//        }
+        
+        api.progressHandler = { (progress) in
+            print(progress.localizedDescription ?? "")
+        }
+        api.destinationUrlHandler = { (destinationURL) in
+            print("destinationURL = \(destinationURL?.absoluteString ?? "获取目的url失败")")
+        }
+        api.start(in: .hanggeEngine)
     }
     
     

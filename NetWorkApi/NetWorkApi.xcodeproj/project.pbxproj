@@ -16,6 +16,7 @@
 		D8B731D722A123A000E58FD9 /* VersionUpdateApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8B731D622A123A000E58FD9 /* VersionUpdateApi.swift */; };
 		D8B731DB22A1256700E58FD9 /* EngineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8B731DA22A1256700E58FD9 /* EngineManager.swift */; };
 		D8B731DD22A131C900E58FD9 /* UploadImageApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8B731DC22A131C900E58FD9 /* UploadImageApi.swift */; };
+		D8DCE03122A647790085EB6E /* DownloadLogoApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8DCE03022A647790085EB6E /* DownloadLogoApi.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +42,7 @@
 		D8B731D622A123A000E58FD9 /* VersionUpdateApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionUpdateApi.swift; sourceTree = "<group>"; };
 		D8B731DA22A1256700E58FD9 /* EngineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineManager.swift; sourceTree = "<group>"; };
 		D8B731DC22A131C900E58FD9 /* UploadImageApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadImageApi.swift; sourceTree = "<group>"; };
+		D8DCE03022A647790085EB6E /* DownloadLogoApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadLogoApi.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +128,7 @@
 			children = (
 				D8B731D622A123A000E58FD9 /* VersionUpdateApi.swift */,
 				D8B731DC22A131C900E58FD9 /* UploadImageApi.swift */,
+				D8DCE03022A647790085EB6E /* DownloadLogoApi.swift */,
 			);
 			path = Api;
 			sourceTree = "<group>";
@@ -241,6 +244,7 @@
 				D8B731CF22A1200F00E58FD9 /* BaseResponse.swift in Sources */,
 				D8B731DD22A131C900E58FD9 /* UploadImageApi.swift in Sources */,
 				D8B731D722A123A000E58FD9 /* VersionUpdateApi.swift in Sources */,
+				D8DCE03122A647790085EB6E /* DownloadLogoApi.swift in Sources */,
 				D8B731D022A1200F00E58FD9 /* BaseApi.swift in Sources */,
 				D8B731DB22A1256700E58FD9 /* EngineManager.swift in Sources */,
 			);

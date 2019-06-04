@@ -12,6 +12,7 @@ import CCNetwork
 enum ApiHostType {
     case imageHost
     case javaHost
+    case hangge
     
     /// 是否生产环境
     func isProduction() -> Bool {
@@ -24,6 +25,8 @@ enum ApiHostType {
             return isProduction() ? "http://up.youxinpai.com/" : "http://up.youxinpai.com/"
         case .javaHost:
             return isProduction() ? "https://webserver.youxinpai.com" : "https://webserver-app.youxinpai.com"
+        case .hangge:
+            return "http://www.hangge.com/"
         }
     }
     
@@ -32,6 +35,8 @@ enum ApiHostType {
 extension Engine {
     public static let imageEngine = Engine.init(hostUrl: ApiHostType.imageHost.hostUrl())
     public static let javaEngine = Engine.init(hostUrl: ApiHostType.javaHost.hostUrl())
+    public static let hanggeEngine = Engine.init(hostUrl: ApiHostType.hangge.hostUrl())
+
 }
 
 
